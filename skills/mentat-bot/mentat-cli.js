@@ -347,10 +347,17 @@ async function handleJobsList(args) {
     console.log('');
 
     for (const job of jobs) {
+      const types = Array.isArray(job.task_types) ? job.task_types.join(', ') : job.task_types;
+      // Truncate content_direction to 50 chars for preview
+      const direction = job.content_direction || '';
+      const preview = direction.length > 50 ? direction.slice(0, 50) + '...' : direction;
       console.log(`[${job.id}]`);
-      console.log(`  Type:    ${job.type}`);
-      console.log(`  Reward:  ${job.reward_amount} USDC`);
+      console.log(`  Type:    ${types}`);
+      console.log(`  Reward:  ${job.reward_per_completion} USDC`);
       console.log(`  Target:  ${job.target_post_url}`);
+      if (preview) {
+        console.log(`  Task:    ${preview}`);
+      }
       console.log('');
     }
 
@@ -383,24 +390,23 @@ async function handleJobsGet(args) {
     const response = await apiRequest('GET', `/api/jobs/${jobId}`);
     const job = response.data;
 
+    const types = Array.isArray(job.task_types) ? job.task_types.join(', ') : job.task_types;
     console.log('=== Job Details ===');
     console.log('');
     console.log(`ID:          ${job.id}`);
-    console.log(`Type:        ${job.type}`);
-    console.log(`Status:      ${job.status}`);
-    console.log(`Reward:      ${job.reward_amount} USDC`);
+    console.log(`Type:        ${types}`);
+    console.log(`Reward:      ${job.reward_per_completion} USDC`);
+    console.log(`Budget:      ${job.remaining_budget} USDC remaining`);
     console.log(`Target:      ${job.target_post_url}`);
     console.log('');
     console.log('Task Direction:');
-    console.log(`  ${job.direction || '(No specific direction provided)'}`);
+    console.log(`  ${job.content_direction || '(No specific direction provided)'}`);
     console.log('');
 
-    if (job.status === 'active') {
-      console.log('To complete this job:');
-      console.log('1. Post a reply or quote retweet to the target tweet');
-      console.log('2. Submit proof with:');
-      console.log(`   node mentat-cli.js jobs submit --id=${job.id} --tweet-url=<your_tweet_url>`);
-    }
+    console.log('To complete this job:');
+    console.log('1. Post a reply or quote retweet to the target tweet');
+    console.log('2. Submit proof with:');
+    console.log(`   node mentat-cli.js jobs submit --id=${job.id} --tweet-url=<your_tweet_url>`);
   } catch (err) {
     if (err instanceof ApiError) {
       console.error(`Error [${err.code}]: ${err.message}`);
