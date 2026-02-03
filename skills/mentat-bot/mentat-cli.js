@@ -245,8 +245,8 @@ async function handleRegister(args) {
     console.log('1. Reply to this tweet:');
     console.log(`   ${reply_to_url}`);
     console.log('');
-    console.log('2. Your reply must contain this exact text:');
-    console.log(`   ${wallet} ${commitment}`);
+    console.log('2. Your reply must contain this commitment code:');
+    console.log(`   ${commitment}`);
     console.log('');
     console.log('3. After posting, run:');
     console.log('   node mentat-cli.js verify --reply-tweet-url=<your_reply_url>');
